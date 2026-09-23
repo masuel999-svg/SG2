@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPERGOAL ADVENTURE — ARE YOU HERE ON VACATION?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #090d1a 0%, #171b38 50%, #090d1a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(23, 27, 56, 0.95);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(99, 102, 241, 0.35);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            transition: all 0.25s ease;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.6);
+        }
+        .tab-btn {
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+            border-color: #818cf8;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+        /* English LTR formatting inside Arabic UI */
+        .ltr-text {
+            direction: ltr;
+            text-align: left;
+        }
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3730a3;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="selection:bg-indigo-500 selection:text-white pb-16">
+
+    <div id="app" class="max-w-5xl mx-auto px-4 py-8 min-h-screen flex flex-col justify-between">
+        
+        <!-- Header / Branding -->
+        <header class="glass-card rounded-3xl p-6 md:p-8 mb-8 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 border-t-4 border-indigo-500">
+            <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center text-4xl shadow-lg shadow-indigo-500/40">
+                    ✈️
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-sky-400 leading-tight">
+                        SUPERGOAL 2 — ARE YOU HERE ON VACATION?
+                    </h1>
+                    <p class="text-sm md:text-base text-slate-200 font-bold mt-1">
+                        كورس المعلم الحر | إعداد د. محسن الكاشف | Online Teacher Hub
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-6 bg-slate-900/95 px-6 py-3.5 rounded-2xl border border-slate-700 shadow-inner">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-amber-400 text-2xl">⭐</span>
+                    <span id="headerStars" class="font-black text-amber-300 text-xl">0</span>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-2.5">
+                    <span class="text-indigo-400 text-2xl">🏆</span>
+                    <span id="headerPoints" class="font-black text-indigo-300 text-xl">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Bar (Back Button) -->
+        <div id="navBarContainer" class="mb-6 hidden">
+            <button onclick="goBack()" class="flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-2xl border border-slate-600 text-base font-bold transition-all shadow-lg">
+                <span>⬅</span> <span>الرجوع للخلف (Back)</span>
+            </button>
+        </div>
+
+        <!-- Main Dynamic Viewport -->
+        <main id="mainView" class="flex-grow mb-8">
+            <!-- Dynamically injected content goes here -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center text-sm text-slate-400 py-6 border-t border-slate-800 font-semibold">
+            جميع الحقوق محفوظة © Online Teacher Hub — إعداد د. محسن الكاشف
+        </footer>
+    </div>
+
+    <!-- Custom Notification Modal -->
+    <div id="customModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full rounded-3xl p-8 border-2 border-indigo-500/50 shadow-2xl text-center space-y-6">
+            <div id="modalIcon" class="text-6xl">🌟</div>
+            <h3 id="modalTitle" class="text-2xl font-black text-white">إنجاز جديد!</h3>
+            <p id="modalMessage" class="text-slate-200 text-lg leading-relaxed font-semibold"></p>
+            <button onclick="closeModal()" class="w-full py-4 btn-gradient text-white font-bold rounded-2xl shadow-lg text-lg">
+                متابعة المغامرة 🚀
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const vocabData = {
+            greetings: {
+                title: "1. Greetings & Openers — التحيات والافتتاحيات",
+                items: [
+                    { word: "How are you?", meaning: "كيف حالك؟", type: "تعبير (Expression)", example: "How are you doing today?", exampleAr: "كيف حالك اليوم؟", tip: "تستخدم للسؤال عن الحال بلطف." },
+                    { word: "How are you doing?", meaning: "كيف تسير أمورك؟ / كيف حالك؟", type: "تعبير (Expression)", example: "Hello! How are you doing?", exampleAr: "مرحباً! كيف حالك؟", tip: "صيغة ودية أخرى للسؤال عن الحال." },
+                    { word: "It's good to see you.", meaning: "يسعدني لقاؤك", type: "تعبير (Expression)", example: "It's good to see you again.", exampleAr: "يسعدني لقاؤك مجدداً.", tip: "تقال عند لقاء صديق أو شخص عزيز." },
+                    { word: "Excuse me.", meaning: "معذرة / لو سمحت", type: "تعبير (Expression)", example: "Excuse me, where is the elevator?", exampleAr: "معذرة، أين المصعد؟", tip: "تستخدم لجذب الانتباه أو الاستئذان بأدب." }
+                ]
+            },
+            goodbyes: {
+                title: "2. Saying Goodbye — الوداع",
+                items: [
+                    { word: "Bye", meaning: "مع السلامة / باي", type: "تعبير (Expression)", example: "Bye! See you tomorrow.", exampleAr: "مع السلامة! أراك غداً.", tip: "كلمة شائعة لتوديع الأشخاص." },
+                    { word: "Good night", meaning: "ليلة سعيدة", type: "تعبير (Expression)", example: "It's late. Good night!", exampleAr: "الوقت متأخر. ليلة سعيدة!", tip: "تقال عند النوم أو مفارقة شخص ليلاً." },
+                    { word: "See you tomorrow", meaning: "أراك غداً", type: "تعبير (Expression)", example: "Good night and see you tomorrow.", exampleAr: "ليلة سعيدة وأراك غداً.", tip: "تستخدم لتوديع شخص مع موعد اللقاء غداً." },
+                    { word: "Take care", meaning: "اعتني بنفسك", type: "تعبير (Expression)", example: "Bye and take care of yourself.", exampleAr: "مع السلامة واعتني بنفسك.", tip: "تعبير دافئ للوداع والتمني بالسلامة." }
+                ]
+            },
+            introductions: {
+                title: "3. Introductions — التعارف والتقديم",
+                items: [
+                    { word: "My name is", meaning: "اسمي هو", type: "تعبير (Expression)", example: "My name is Ahmed.", exampleAr: "اسمي أحمد.", tip: "للتعريف بالنفس رسمياً." },
+                    { word: "Nickname", meaning: "لقب / اسم الشهرة", type: "اسم (Noun)", example: "What is your nickname?", exampleAr: "ما هو لقبك؟", tip: "اسم غير رسمي ينادى به الشخص." },
+                    { word: "Introduce", meaning: "يُقدم شخصاً", type: "فعل (Verb)", example: "Let me introduce you to my friend.", exampleAr: "دعني أقدمك لصديقي.", tip: "تعريف شخص بشخص آخر." },
+                    { word: "Nice to meet you", meaning: "سررت بلقائك", type: "تعبير (Expression)", example: "Nice to meet you too.", exampleAr: "سررت بلقائك أيضاً.", tip: "الرد التقليدي عند التعرف على شخص لأول مرة." }
+                ]
+            },
+            personalInfo: {
+                title: "4. Personal Information — المعلومات الشخصية",
+                items: [
+                    { word: "First name", meaning: "الاسم الأول", type: "اسم (Noun)", example: "What is your first name?", exampleAr: "ما هو اسمك الأول؟", tip: "الاسم الشخصي الأول." },
+                    { word: "Last name", meaning: "اسم العائلة / الأخير", type: "اسم (Noun)", example: "My last name is Al-Kashif.", exampleAr: "اسم عائلتي الكاشف.", tip: "اسم العائلة." },
+                    { word: "Address", meaning: "عنوان", type: "اسم (Noun)", example: "What is your home address?", exampleAr: "ما هو عنوان منزلك؟", tip: "مكان السكن بالتفصيل." },
+                    { word: "Age", meaning: "العمر", type: "اسم (Noun)", example: "What is your age?", exampleAr: "ما هو عمرك؟", tip: "عدد سنوات الحياة." },
+                    { word: "Date of birth", meaning: "تاريخ الميلاد", type: "اسم (Noun)", example: "Write your date of birth here.", exampleAr: "اكتب تاريخ ميلادك هنا.", tip: "يوم وشهر وسنة الولادة." },
+                    { word: "Nationality", meaning: "جنسية", type: "اسم (Noun)", example: "What is your nationality? I am Saudi.", exampleAr: "ما هي جنسيتك؟ أنا سعودي.", tip: "البلد الأصلي المنتمي إليه الفرد." },
+                    { word: "Occupation", meaning: "مهنة / وظيفة", type: "اسم (Noun)", example: "His occupation is a teacher.", exampleAr: "مهنته هي معلم.", tip: "العمل الرسمي للشخص." },
+                    { word: "Telephone number", meaning: "رقم الهاتق", type: "اسم (Noun)", example: "Give me your telephone number.", exampleAr: "أعطني رقم هاتفك.", tip: "رقم الاتصال." },
+                    { word: "Email address", meaning: "البريد الإلكتروني", type: "اسم (Noun)", example: "Send it to my email address.", exampleAr: "أرسله إلى بريدي الإلكتروني.", tip: "العنوان الرقمي للرسائل." },
+                    { word: "Spelling", meaning: "تهجئة الحروف", type: "اسم (Noun)", example: "Can you check the spelling?", exampleAr: "هل يمكنك التحقق من التهجئة؟", tip: "نطق أو كتابة حروف الكلمة فرادى." }
+                ]
+            },
+            hotelTravel: {
+                title: "5. Hotel & Travel — الفندق والسفر",
+                items: [
+                    { word: "Hotel", meaning: "فندق", type: "اسم (Noun)", example: "This hotel is luxurious.", exampleAr: "هذا الفندق فاخر.", tip: "مكان إقامة المسافرين." },
+                    { word: "Reception desk", meaning: "مكتب الاستقبال", type: "اسم (Noun)", example: "Ask at the reception desk for a key.", exampleAr: "اسأل في مكتب الاستقبال عن مفتاح.", tip: "النقطة الأولى لاستقبال الزوار في الفندق." },
+                    { word: "Reservation", meaning: "حجز", type: "اسم (Noun)", example: "I have a hotel room reservation.", exampleAr: "لدي حجز غرفة في الفندق.", tip: "تأكيد مكان مسبق." },
+                    { word: "Key card", meaning: "بطاقة المفتاح", type: "اسم (Noun)", example: "Use your key card to open the door.", exampleAr: "استخدم بطاقة المفتاح لفتح الباب.", tip: "بطاقة إلكترونية لفتح الغرف." },
+                    { word: "Credit card", meaning: "بطاقة ائتمان", type: "اسم (Noun)", example: "Can I pay with a credit card?", exampleAr: "هل يمكنني الدفع ببطاقة الائتمان؟", tip: "بطاقة بنكية للدفع." },
+                    { word: "Elevator", meaning: "مصعد / أسانسير", type: "اسم (Noun)", example: "Take the elevator to the third floor.", exampleAr: "خذ المصعد إلى الطابق الثالث.", tip: "جهاز الصعود والنزول في المباني." },
+                    { word: "Concierge", meaning: "موظف الاستعلامات", type: "اسم (Noun)", example: "The concierge helped with our bags.", exampleAr: "ساعدنا موظف الاستعلامات في حقائبنا.", tip: "مسؤول مساعدة النزلاء في الفندق." },
+                    { word: "Festival", meaning: "مهرجان", type: "اسم (Noun)", example: "The city festival is amazing.", exampleAr: "مهرجان المدينة مذهل.", tip: "احتفال كبير وفعاليات جماعية." }
+                ]
+            },
+            verbs: {
+                title: "6. Key Verbs — الأفعال الرئيسية",
+                items: [
+                    { word: "check into", meaning: "يسجل الدخول في فندق", type: "فعل مركب (Verb Phr.)", example: "We will check into the hotel now.", exampleAr: "سنسجل دخولنا في الفندق الآن.", tip: "إجراءات الوصول للفندق." },
+                    { word: "fill in", meaning: "يعبئ نموذجاً", type: "فعل مركب (Verb Phr.)", example: "Please fill in this form.", exampleAr: "من فضلك املأ هذا النموذج.", tip: "كتابة البيانات في الفراغات." },
+                    { word: "greet", meaning: "يحيي", type: "فعل (Verb)", example: "He greeted the guests politely.", exampleAr: "حيّا الضيوف بأدب.", tip: "إلقاء التحية." },
+                    { word: "introduce", meaning: "يُقدم شخصاً", type: "فعل (Verb)", example: "Let me introduce my brother.", exampleAr: "دعني أقدم أخي.", tip: "التعريف بشخص." },
+                    { word: "pay for", meaning: "يدفع مقابل", type: "فعل (Verb)", example: "I need to pay for the room.", exampleAr: "أحتاج لدفع ثمن الغرفة.", tip: "تسديد المبلغ المالي." },
+                    { word: "spell", meaning: "يهجئ الحروف", type: "فعل (Verb)", example: "How do you spell your name?", exampleAr: "كيف تهجئ اسمك؟", tip: "ذكر الحروف فرادى." },
+                    { word: "stay in", meaning: "يقيم في", type: "فعل (Verb)", example: "We stay in a nice hotel.", exampleAr: "نقيم في فندق جميل.", tip: "المكوث في مكان." }
+                ]
+            },
+            expressions: {
+                title: "7. Real Talk & Expressions — تعبيرات واقعية",
+                items: [
+                    { word: "on vacation", meaning: "في إجازة", type: "تعبير (Expression)", example: "Are you here on vacation?", exampleAr: "هل أنت هنا في إجازة؟", tip: "قضاء وقت راحة وسفر." },
+                    { word: "on business", meaning: "في رحلة عمل", type: "تعبير (Expression)", example: "No, I am here on business.", exampleAr: "لا، أنا هنا في رحلة عمل.", tip: "السفر بغرض العمل والمهام المهنية." },
+                    { word: "Here you are", meaning: "تفضل", type: "تعبير (Expression)", example: "Here is your key card. Here you are.", exampleAr: "ها هي بطاقة مفتاحك. تفضل.", tip: "تقال عند إعطاء شيء لشخص." },
+                    { word: "Have a nice stay", meaning: "أتمنى لك إقامة طيبة", type: "تعبير (Expression)", example: "Welcome and have a nice stay!", exampleAr: "أهلاً بك ونتمنى لك إقامة طيبة!", tip: "تمني طيب للنزلاء." },
+                    { word: "I'm so sorry", meaning: "أنا آسف جداً", type: "تعبير (Expression)", example: "I'm so sorry for the delay.", exampleAr: "أنا آسف جداً على التأخير.", tip: "الاعتذار بصدق." },
+                    { word: "That's all right", meaning: "لا بأس / لا عليك", type: "تعبير (Expression)", example: "That's all right, don't worry.", exampleAr: "لا بأس، لا تقلق.", tip: "الرد على الاعتذار." },
+                    { word: "Thank you so much", meaning: "شكراً جزيلاً", type: "تعبير (Expression)", example: "Thank you so much for your help.", exampleAr: "شكراً جزيلاً على مساعدة.", tip: "شكر عميق." },
+                    { word: "You're welcome", meaning: "على الرحب والسعة", type: "تعبير (Expression)", example: "You're welcome anytime.", exampleAr: "على الرحب والسعة في أي وقت.", tip: "الرد على الشكر." }
+                ]
+            }
+        };
+
+        let state = {
+            currentScreen: 'home',
+            activeVocabCategory: null,
+            activeGrammarLevel: 1,
+            learnedWords: JSON.parse(localStorage.getItem('sg2_learnedWords')) || [],
+            points: parseInt(localStorage.getItem('sg2_points')) || 0,
+            stars: parseInt(localStorage.getItem('sg2_stars')) || 0,
+            completedLevels: JSON.parse(localStorage.getItem('sg2_completedLevels')) || { vocab: [], grammar: [1] },
+            examScores: JSON.parse(localStorage.getItem('sg2_examScores')) || {},
+            screenHistory: ['home']
+        };
+
+        function saveState() {
+            localStorage.setItem('sg2_learnedWords', JSON.stringify(state.learnedWords));
+            localStorage.setItem('sg2_points', state.points);
+            localStorage.setItem('sg2_stars', state.stars);
+            localStorage.setItem('sg2_completedLevels', JSON.stringify(state.completedLevels));
+            localStorage.setItem('sg2_examScores', JSON.stringify(state.examScores));
+            updateHeader();
+        }
+
+        function updateHeader() {
+            document.getElementById('headerStars').innerText = state.stars;
+            document.getElementById('headerPoints').innerText = state.points;
+        }
+
+        function navigateTo(screen, params = {}) {
+            if (state.currentScreen !== screen) {
+                state.screenHistory.push(screen);
+            }
+            state.currentScreen = screen;
+            if (params.category) state.activeVocabCategory = params.category;
+            if (params.grammarLevel) state.activeGrammarLevel = params.grammarLevel;
+
+            const navContainer = document.getElementById('navBarContainer');
+            if (state.currentScreen === 'home') {
+                navContainer.classList.add('hidden');
+                state.screenHistory = ['home'];
+            } else {
+                navContainer.classList.remove('hidden');
+            }
+
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBack() {
+            if (state.screenHistory.length > 1) {
+                state.screenHistory.pop();
+                state.currentScreen = state.screenHistory[state.screenHistory.length - 1];
+                if (state.currentScreen === 'home') {
+                    document.getElementById('navBarContainer').classList.add('hidden');
+                }
+                render();
+            } else {
+                navigateTo('home');
+            }
+        }
+
+        function showModal(title, message, icon = '🌟') {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalIcon').innerText = icon;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showModal('النطق غير متوفر', 'متصفحك لا يدعم خاصية التحدث الصوتي.', '⚠️');
+            }
+        }
+
+        function render() {
+            updateHeader();
+            const main = document.getElementById('mainView');
+            
+            switch (state.currentScreen) {
+                case 'home':
+                    main.innerHTML = renderHomeScreen();
+                    break;
+                case 'vocabMenu':
+                    main.innerHTML = renderVocabMenuScreen();
+                    break;
+                case 'vocabLearn':
+                    main.innerHTML = renderVocabLearnScreen();
+                    break;
+                case 'vocabGames':
+                    main.innerHTML = renderVocabGamesScreen();
+                    break;
+                case 'vocabExam':
+                    main.innerHTML = renderVocabExamScreen();
+                    break;
+                case 'grammarMenu':
+                    main.innerHTML = renderGrammarMenuScreen();
+                    break;
+                case 'grammarLearn':
+                    main.innerHTML = renderGrammarLearnScreen();
+                    break;
+                case 'grammarExam':
+                    main.innerHTML = renderGrammarExamScreen();
+                    break;
+                case 'reviewMenu':
+                    main.innerHTML = renderReviewScreen();
+                    break;
+                case 'progressMenu':
+                    main.innerHTML = renderProgressScreen();
+                    break;
+                case 'achievementsMenu':
+                    main.innerHTML = renderAchievementsScreen();
+                    break;
+                default:
+                    main.innerHTML = renderHomeScreen();
+            }
+        }
+
+        function renderHomeScreen() {
+            return `
+                <div class="space-y-8">
+                    <div class="glass-card rounded-3xl p-8 md:p-10 text-center relative overflow-hidden shadow-2xl border-2 border-indigo-500/40">
+                        <span class="inline-block px-5 py-2 bg-indigo-500/20 text-indigo-300 rounded-full text-sm font-black mb-4 border border-indigo-500/40">
+                            SuperGoal 2 — Unit 1: Are You Here on Vacation?
+                        </span>
+                        <h2 class="text-3xl md:text-5xl font-black text-white mb-4 leading-snug">
+                            مرحباً بك في مغامرة تعلم الإنجليزية! ✈️
+                        </h2>
+                        <p class="text-slate-200 text-base md:text-lg max-w-3xl mx-auto mb-6 leading-relaxed font-semibold">
+                            تعلم المفردات وقواعد الفندق والسفر (Verb Be, Wh- Questions, Prepositions) بطريقة تفاعلية مبسطة تشبه الشرح الفردي خطوة بخطوة.
+                        </p>
+                        <div class="inline-flex items-center gap-3 bg-slate-900/95 px-6 py-3 rounded-2xl border border-slate-700 text-sm font-black text-amber-300 shadow">
+                            <span>🎓 إشراف: د. محسن الكاشف</span>
+                            <span>•</span>
+                            <span>Online Teacher Hub</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Navigation Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div onclick="navigateTo('vocabMenu')" class="glass-card rounded-3xl p-8 hover:border-indigo-500 cursor-pointer transition-all duration-300 group shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
+                                    📚
+                                </div>
+                                <h3 class="text-xl font-black text-white mb-2">Vocabulary — المفردات</h3>
+                                <p class="text-sm text-slate-300 font-semibold leading-relaxed">تعلم كلمات التحيات، الفندق والسفر، والمعلومات الشخصية بالنطق والأمثلة والامتحانات المخصصة.</p>
+                            </div>
+                            <div class="mt-8 flex items-center justify-between text-sm text-indigo-400 font-black">
+                                <span>ابدأ المفردات</span>
+                                <span class="group-hover:translate-x-1 transition-transform">⬅</span>
+                            </div>
+                        </div>
+
+                        <div onclick="navigateTo('grammarMenu')" class="glass-card rounded-3xl p-8 hover:border-purple-500 cursor-pointer transition-all duration-300 group shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="w-16 h-16 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
+                                    ⚙️
+                                </div>
+                                <h3 class="text-xl font-black text-white mb-2">Grammar — القواعد التفاعلية</h3>
+                                <p class="text-sm text-slate-300 font-semibold leading-relaxed">شرح تفاعلي خطوة بخطوة لأفعال الكينونة (Be) وأسئلة الاستعلام وحروف المكان.</p>
+                            </div>
+                            <div class="mt-8 flex items-center justify-between text-sm text-purple-400 font-black">
+                                <span>استعراض القواعد</span>
+                                <span class="group-hover:translate-x-1 transition-transform">⬅</span>
+                            </div>
+                        </div>
+
+                        <div onclick="navigateTo('reviewMenu')" class="glass-card rounded-3xl p-8 hover:border-emerald-500 cursor-pointer transition-all duration-300 group shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
+                                    🎯
+                                </div>
+                                <h3 class="text-xl font-black text-white mb-2">Review — المراجعة الشاملة</h3>
+                                <p class="text-sm text-slate-300 font-semibold leading-relaxed">اختبر استيعابك لكل ما تعلمته في الوحدة في مكان واحد.</p>
+                            </div>
+                            <div class="mt-8 flex items-center justify-between text-sm text-emerald-400 font-black">
+                                <span>ابدأ المراجعة</span>
+                                <span class="group-hover:translate-x-1 transition-transform">⬅</span>
+                            </div>
+                        </div>
+
+                        <div onclick="navigateTo('progressMenu')" class="glass-card rounded-3xl p-8 hover:border-amber-500 cursor-pointer transition-all duration-300 group shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
+                                    📊
+                                </div>
+                                <h3 class="text-xl font-black text-white mb-2">My Progress — تقدمي</h3>
+                                <p class="text-sm text-slate-300 font-semibold leading-relaxed">تابع الكلمات المتقنة، النقاط، والنجوم المحققة بدقة.</p>
+                            </div>
+                            <div class="mt-8 flex items-center justify-between text-sm text-amber-400 font-black">
+                                <span>عرض التقدم</span>
+                                <span class="group-hover:translate-x-1 transition-transform">⬅</span>
+                            </div>
+                        </div>
+
+                        <div onclick="navigateTo('achievementsMenu')" class="glass-card rounded-3xl p-8 hover:border-sky-500 cursor-pointer transition-all duration-300 group shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="w-16 h-16 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
+                                    🏆
+                                </div>
+                                <h3 class="text-xl font-black text-white mb-2">Achievements — الأوسمة</h3>
+                                <p class="text-sm text-slate-300 font-semibold leading-relaxed">شاهد الأوسمة التعليمية وشارات التميز التي حصلت عليها.</p>
+                            </div>
+                            <div class="mt-8 flex items-center justify-between text-sm text-sky-400 font-black">
+                                <span>عرض الأوسمة</span>
+                                <span class="group-hover:translate-x-1 transition-transform">⬅</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderVocabMenuScreen() {
+            let html = `
+                <div class="space-y-6">
+                    <div class="glass-card rounded-3xl p-8 border border-indigo-500/40 shadow-xl">
+                        <h2 class="text-2xl md:text-3xl font-black text-white mb-3">📚 قسم المفردات — Vocabulary</h2>
+                        <p class="text-sm md:text-base text-slate-200 font-semibold">اختر إحدى المجموعات للتعلم والتدرب أو قم بإجراء اختبار الكلمات الشامل.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            `;
+
+            for (const [key, category] of Object.entries(vocabData)) {
+                let learnedCount = category.items.filter(item => state.learnedWords.includes(item.word)).length;
+                let totalCount = category.items.length;
+                let percent = Math.round((learnedCount / totalCount) * 100);
+
+                html += `
+                    <div class="glass-card rounded-3xl p-6 border border-slate-700 hover:border-indigo-500 transition-all shadow-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="font-black text-white text-lg">${category.title}</h3>
+                                <span class="text-xs bg-slate-800 text-indigo-300 px-3.5 py-1.5 rounded-xl border border-slate-600 font-bold">${totalCount} كلمات</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-3.5 mb-3 overflow-hidden border border-slate-800">
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3.5 rounded-full" style="width: ${percent}%"></div>
+                            </div>
+                            <p class="text-xs md:text-sm text-slate-300 font-semibold">تم إتقان ${learnedCount} من ${totalCount} (${percent}%)</p>
+                        </div>
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <button onclick="navigateTo('vocabLearn', {category: '${key}'})" class="flex-1 py-3 px-4 btn-gradient text-white text-xs md:text-sm font-black rounded-2xl shadow">
+                                تعلم واستعراض 📖
+                            </button>
+                            <button onclick="navigateTo('vocabGames', {category: '${key}'})" class="py-3 px-5 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs md:text-sm font-black rounded-2xl border border-slate-600 shadow">
+                                الألعاب 🎮
+                            </button>
+                            <button onclick="navigateTo('vocabExam', {category: '${key}'})" class="py-3 px-5 bg-indigo-900 hover:bg-indigo-800 text-indigo-200 text-xs md:text-sm font-black rounded-2xl border border-indigo-700 shadow">
+                                اختبار 📝
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        let currentLearnIndex = 0;
+        function renderVocabLearnScreen() {
+            const category = vocabData[state.activeVocabCategory];
+            if (!category) return `<div class="p-6 text-center">عذراً، المجموعة غير موجودة.</div>`;
+            
+            if (currentLearnIndex >= category.items.length) currentLearnIndex = 0;
+            if (currentLearnIndex < 0) currentLearnIndex = category.items.length - 1;
+
+            const item = category.items[currentLearnIndex];
+            const isLearned = state.learnedWords.includes(item.word);
+
+            return `
+                <div class="space-y-6 max-w-2xl mx-auto">
+                    <div class="glass-card rounded-3xl p-6 flex justify-between items-center border border-slate-700 shadow-xl">
+                        <h3 class="font-black text-white text-base md:text-lg">${category.title}</h3>
+                        <span class="text-xs md:text-sm bg-indigo-500/20 text-indigo-300 px-4 py-1.5 rounded-xl font-black border border-indigo-500/30">الكلمة ${currentLearnIndex + 1} من ${category.items.length}</span>
+                    </div>
+
+                    <div class="glass-card rounded-3xl p-8 md:p-10 border-2 border-indigo-500/50 shadow-2xl space-y-8 text-center relative">
+                        <div class="absolute top-6 left-6">
+                            <button onclick="speakText('${item.word}')" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-xl transition-transform hover:scale-105" title="استمع للنطق الأمريكي">
+                                🔊
+                            </button>
+                        </div>
+
+                        <div class="pt-4">
+                            <span class="text-xs md:text-sm bg-purple-500/20 text-purple-300 px-4 py-1.5 rounded-full border border-purple-500/40 font-black">${item.type}</span>
+                            <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-2 tracking-wide ltr-text text-center">${item.word}</h2>
+                            <p class="text-2xl md:text-3xl font-black text-amber-400 mb-6">${item.meaning}</p>
+                        </div>
+
+                        <div class="bg-slate-900/90 p-6 rounded-3xl border border-slate-800 text-right space-y-3 shadow-inner">
+                            <p class="text-base font-black text-slate-100">🇬🇧 Example: <span class="text-indigo-300 font-semibold ltr-text inline-block">${item.example}</span></p>
+                            <p class="text-base font-black text-slate-100">🇸🇦 الترجمة: <span class="text-slate-300 font-semibold">${item.exampleAr}</span></p>
+                            <p class="text-sm text-amber-300 font-bold pt-3 border-t border-slate-800">💡 توضيح: ${item.tip}</p>
+                        </div>
+
+                        <div>
+                            ${isLearned ? 
+                                `<div class="inline-flex items-center gap-3 bg-emerald-500/20 text-emerald-300 px-6 py-3 rounded-2xl text-sm font-black border border-emerald-500/40">
+                                    <span>✅ تم إتقان هذه الكلمة (+1 نقطة ونجمة منحت مرة واحدة)</span>
+                                </div>` :
+                                `<button onclick="markWordLearned('${item.word}')" class="py-4 px-8 btn-gradient text-white text-base font-black rounded-2xl shadow-lg">
+                                    أتقنت هذه الكلمة ⭐ (احصل على نقطة ونجمة)
+                                </button>`
+                            }
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center gap-6">
+                        <button onclick="currentLearnIndex--; render();" class="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-2xl border border-slate-700 shadow text-base">
+                            ⬅ الكلمة السابقة
+                        </button>
+                        <button onclick="currentLearnIndex++; render();" class="flex-1 py-4 btn-gradient text-white font-black rounded-2xl shadow text-base">
+                            الكلمة التالية ➡
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function markWordLearned(word) {
+            if (!state.learnedWords.includes(word)) {
+                state.learnedWords.push(word);
+                state.points += 1;
+                state.stars += 1;
+                saveState();
+                showModal('أحسنت!', `لقد أتقنت الكلمة "${word}" وحصلت على نقطة ونجمة جديدة!`, '⭐');
+                render();
+            }
+        }
+
+        let currentGameType = 'matching';
+        let gameActiveData = null;
+
+        function renderVocabGamesScreen() {
+            const category = vocabData[state.activeVocabCategory];
+            if (!category) return `<div class="p-6 text-center">عذراً، المجموعة غير موجودة.</div>`;
+
+            return `
+                <div class="space-y-6 max-w-2xl mx-auto">
+                    <div class="glass-card rounded-3xl p-6 border border-indigo-500/40 shadow-xl space-y-4">
+                        <div>
+                            <h3 class="font-black text-white text-lg">🎮 ألعاب المفردات التفاعلية (SuperGoal 2)</h3>
+                            <p class="text-sm text-indigo-300 font-bold mt-1">${category.title}</p>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-700">
+                            <button onclick="setVocabGameType('matching')" class="tab-btn px-3 py-3.5 text-xs md:text-sm font-black rounded-2xl border ${currentGameType === 'matching' ? 'active' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800'}">🔗 توصيل</button>
+                            <button onclick="setVocabGameType('mcq')" class="tab-btn px-3 py-3.5 text-xs md:text-sm font-black rounded-2xl border ${currentGameType === 'mcq' ? 'active' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800'}">🎯 اختيار المعنى</button>
+                            <button onclick="setVocabGameType('completeWord')" class="tab-btn px-3 py-3.5 text-xs md:text-sm font-black rounded-2xl border ${currentGameType === 'completeWord' ? 'active' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800'}">✍️ إكمال الكلمة</button>
+                            <button onclick="setVocabGameType('completeSentence')" class="tab-btn px-3 py-3.5 text-xs md:text-sm font-black rounded-2xl border ${currentGameType === 'completeSentence' ? 'active' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800'}">📝 إكمال الجملة</button>
+                        </div>
+                    </div>
+
+                    <div id="gameContainer" class="glass-card rounded-3xl p-8 border border-slate-700 shadow-xl">
+                        ${renderActiveVocabGame(category)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function setVocabGameType(type) {
+            currentGameType = type;
+            gameActiveData = null;
+            render();
+        }
+
+        function renderActiveVocabGame(category) {
+            if (!gameActiveData) {
+                const items = [...category.items].sort(() => 0.5 - Math.random()).slice(0, 4);
+                if (currentGameType === 'matching') {
+                    gameActiveData = {
+                        items: items,
+                        shuffledMeanings: [...items].sort(() => 0.5 - Math.random()),
+                        selectedWord: null,
+                        matches: {}
+                    };
+                } else if (currentGameType === 'mcq') {
+                    const target = items[0];
+                    const distractors = category.items.filter(i => i.word !== target.word).sort(() => 0.5 - Math.random()).slice(0, 3);
+                    const options = [target, ...distractors].sort(() => 0.5 - Math.random());
+                    gameActiveData = { target, options, answered: false };
+                } else if (currentGameType === 'completeWord') {
+                    const target = items[0];
+                    let word = target.word;
+                    let hiddenIndex = Math.floor(Math.random() * Math.min(word.length, 5));
+                    let maskedWord = word.split('');
+                    let correctChar = maskedWord[hiddenIndex];
+                    maskedWord[hiddenIndex] = '_';
+                    let distractors = ['a', 'e', 'i', 'o', 'u', 't', 's', 'r', 'n', 'c'].filter(c => c !== correctChar.toLowerCase()).slice(0, 3);
+                    let options = [correctChar, ...distractors].sort(() => 0.5 - Math.random());
+                    gameActiveData = { target, maskedWord: maskedWord.join(''), correctChar, options, answered: false };
+                } else if (currentGameType === 'completeSentence') {
+                    const target = items[0];
+                    const distractors = category.items.filter(i => i.word !== target.word).sort(() => 0.5 - Math.random()).slice(0, 3);
+                    const options = [target, ...distractors].sort(() => 0.5 - Math.random());
+                    gameActiveData = { target, options, answered: false };
+                }
+            }
+
+            if (currentGameType === 'matching') {
+                const data = gameActiveData;
+                let allMatched = Object.keys(data.matches).length === data.items.length;
+
+                if (allMatched) {
+                    return `
+                        <div class="text-center space-y-6 py-8">
+                            <div class="text-6xl">🏆</div>
+                            <h3 class="text-2xl font-black text-white">رائع! أكملت لعبة التوصيل بنجاح</h3>
+                            <button onclick="gameActiveData = null; render();" class="py-4 px-8 btn-gradient text-white font-black rounded-2xl shadow text-base">العب مرة أخرى 🔄</button>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="space-y-6">
+                        <p class="text-sm text-slate-300 font-bold text-center">اضغط على الكلمة الإنجليزية ثم اضغط على المعنى العربي المطابق:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-black text-indigo-400 text-center">الكلمات الإنجليزية</h4>
+                                ${data.items.map(item => {
+                                    const isMatched = Object.keys(data.matches).includes(item.word);
+                                    const isSelected = data.selectedWord === item.word;
+                                    return `
+                                        <button type="button" ${isMatched ? 'disabled' : ''} onclick="selectGameWord('${item.word.replace(/'/g, "\\'")}')" class="w-full p-4 rounded-2xl text-base font-black ltr-text border transition-all cursor-pointer ${isMatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 opacity-50' : isSelected ? 'bg-indigo-600 border-indigo-400 text-white shadow-xl scale-105' : 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800'}">
+                                            ${item.word} ${isMatched ? '✓' : ''}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-black text-purple-400 text-center">المعاني العربية</h4>
+                                ${data.shuffledMeanings.map(item => {
+                                    const isMatched = Object.values(data.matches).includes(item.meaning);
+                                    return `
+                                        <button type="button" ${isMatched ? 'disabled' : ''} onclick="selectGameMeaning('${item.meaning.replace(/'/g, "\\'")}', '${item.word.replace(/'/g, "\\'")}')" class="w-full p-4 rounded-2xl text-base font-black text-right border transition-all cursor-pointer ${isMatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 opacity-50' : 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800'}">
+                                            ${item.meaning} ${isMatched ? '✓' : ''}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentGameType === 'mcq') {
+                const data = gameActiveData;
+                return `
+                    <div class="space-y-6 text-center">
+                        <div class="flex justify-center">
+                            <button onclick="speakText('${data.target.word}')" class="px-5 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-black shadow-lg">🔊 استمع للكلمة</button>
+                        </div>
+                        <h3 class="text-3xl font-black text-white ltr-text text-center">${data.target.word}</h3>
+                        <p class="text-sm text-slate-300 font-bold">ما هو المعنى الصحيح لهذه الكلمة؟</p>
+                        
+                        <div class="grid grid-cols-1 gap-3 pt-3">
+                            ${data.options.map(opt => {
+                                let btnClass = 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800';
+                                if (data.answered) {
+                                    if (opt.word === data.target.word) btnClass = 'bg-emerald-600/40 border-emerald-500 text-emerald-200';
+                                    else if (opt.selected) btnClass = 'bg-rose-600/40 border-rose-500 text-rose-200';
+                                }
+                                return `
+                                    <button type="button" ${data.answered ? 'disabled' : ''} onclick="checkMCQ('${opt.word.replace(/'/g, "\\'")}', '${data.target.word.replace(/'/g, "\\'")}')" class="w-full p-4.5 rounded-2xl text-base font-black border transition-all cursor-pointer ${btnClass}">
+                                        ${opt.meaning}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${data.answered ? `
+                            <button onclick="gameActiveData = null; render();" class="mt-6 py-4 px-8 btn-gradient text-white text-sm font-black rounded-2xl shadow">السؤال التالي ➡</button>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (currentGameType === 'completeWord') {
+                const data = gameActiveData;
+                return `
+                    <div class="space-y-6 text-center">
+                        <p class="text-sm text-slate-300 font-bold">أكمل الحرف الناقص في الكلمة التالية:</p>
+                        <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-3xl font-black tracking-widest text-indigo-300 ltr-text text-center">
+                            ${data.maskedWord}
+                        </div>
+                        <p class="text-sm text-amber-300 font-bold">المعنى: ${data.target.meaning}</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 pt-3">
+                            ${data.options.map(char => {
+                                let btnClass = 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800';
+                                if (data.answered) {
+                                    if (char.toLowerCase() === data.correctChar.toLowerCase()) btnClass = 'bg-emerald-600/40 border-emerald-500 text-emerald-200';
+                                    else if (char === data.selectedChar) btnClass = 'bg-rose-600/40 border-rose-500 text-rose-200';
+                                }
+                                return `
+                                    <button type="button" ${data.answered ? 'disabled' : ''} onclick="checkCompleteWord('${char}', '${data.correctChar}')" class="p-4 rounded-2xl text-xl font-black uppercase border transition-all cursor-pointer ltr-text text-center ${btnClass}">
+                                        ${char}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${data.answered ? `
+                            <button onclick="gameActiveData = null; render();" class="mt-6 py-4 px-8 btn-gradient text-white text-sm font-black rounded-2xl shadow">السؤال التالي ➡</button>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (currentGameType === 'completeSentence') {
+                const data = gameActiveData;
+                let sentenceWithBlank = data.target.example.replace(new RegExp(data.target.word, 'gi'), '_____');
+                return `
+                    <div class="space-y-6 text-center">
+                        <p class="text-sm text-slate-300 font-bold">اختر الكلمة المناسبة لإكمال الجملة:</p>
+                        <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-lg font-black text-indigo-300 leading-relaxed shadow-inner ltr-text text-center">
+                            "${sentenceWithBlank}"
+                        </div>
+                        <p class="text-sm text-slate-400 font-bold">(${data.target.exampleAr})</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+                            ${data.options.map(opt => {
+                                let btnClass = 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800';
+                                if (data.answered) {
+                                    if (opt.word === data.target.word) btnClass = 'bg-emerald-600/40 border-emerald-500 text-emerald-200';
+                                    else if (opt.selected) btnClass = 'bg-rose-600/40 border-rose-500 text-rose-200';
+                                }
+                                return `
+                                    <button type="button" ${data.answered ? 'disabled' : ''} onclick="checkCompleteSentence('${opt.word.replace(/'/g, "\\'")}', '${data.target.word.replace(/'/g, "\\'")}')" class="p-4 rounded-2xl text-sm font-black border transition-all cursor-pointer ltr-text text-center ${btnClass}">
+                                        ${opt.word}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                        ${data.answered ? `
+                            <button onclick="gameActiveData = null; render();" class="mt-6 py-4 px-8 btn-gradient text-white text-sm font-black rounded-2xl shadow">السؤال التالي ➡</button>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        function selectGameWord(word) {
+            gameActiveData.selectedWord = word;
+            render();
+        }
+
+        function selectGameMeaning(meaning, targetWord) {
+            if (!gameActiveData.selectedWord) return;
+            if (gameActiveData.selectedWord === targetWord) {
+                gameActiveData.matches[targetWord] = meaning;
+                speakText(targetWord);
+                state.points += 1;
+                saveState();
+            }
+            gameActiveData.selectedWord = null;
+            render();
+        }
+
+        function checkMCQ(selectedWord, targetWord) {
+            gameActiveData.answered = true;
+            gameActiveData.options.forEach(o => { if (o.word === selectedWord) o.selected = true; });
+            if (selectedWord === targetWord) {
+                state.points += 2;
+                saveState();
+            }
+            render();
+        }
+
+        function checkCompleteWord(selectedChar, correctChar) {
+            gameActiveData.answered = true;
+            gameActiveData.selectedChar = selectedChar;
+            if (selectedChar.toLowerCase() === correctChar.toLowerCase()) {
+                state.points += 2;
+                saveState();
+            }
+            render();
+        }
+
+        function checkCompleteSentence(selectedWord, targetWord) {
+            gameActiveData.answered = true;
+            gameActiveData.options.forEach(o => { if (o.word === selectedWord) o.selected = true; });
+            if (selectedWord === targetWord) {
+                state.points += 2;
+                saveState();
+            }
+            render();
+        }
+
+        let vocabExamState = {
+            category: null,
+            questions: [],
+            currentIndex: 0,
+            userAnswers: {},
+            submitted: false,
+            score: 0
+        };
+
+        function renderVocabExamScreen() {
+            const categoryKey = state.activeVocabCategory;
+            const category = vocabData[categoryKey];
+            if (!vocabExamState.questions.length || vocabExamState.category !== categoryKey) {
+                initVocabExam(categoryKey);
+            }
+
+            const q = vocabExamState.questions[vocabExamState.currentIndex];
+
+            if (vocabExamState.submitted) {
+                let passed = vocabExamState.score >= 8; // out of 10
+                return `
+                    <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto text-center space-y-6 border border-slate-700 shadow-2xl">
+                        <div class="text-6xl">${passed ? '🏆' : '⚠️'}</div>
+                        <h3 class="text-3xl font-black text-white">نتيجة اختبار مفردات: ${category.title}</h3>
+                        <div class="text-4xl font-black ${passed ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${vocabExamState.score} / 10
+                        </div>
+                        <p class="text-base font-semibold text-slate-200">
+                            ${passed ? 'مبارك! لقد اجتزت اختبار المفردات بنجاح!' : 'لم تصل لدرجة النجاح (8 من 10). راجع الكلمات وحاول مرة أخرى.'}
+                        </p>
+
+                        <div class="space-y-3 text-right max-h-60 overflow-y-auto p-3">
+                            <h4 class="font-black text-white text-sm">مراجعة الأسئلة:</h4>
+                            ${vocabExamState.questions.map((quest, idx) => {
+                                let userAns = vocabExamState.userAnswers[idx];
+                                let isCorr = userAns === quest.correct;
+                                return `
+                                    <div class="p-4 rounded-2xl bg-slate-900 border ${isCorr ? 'border-emerald-500/40 text-emerald-300' : 'border-rose-500/40 text-rose-300'} text-xs md:text-sm space-y-1">
+                                        <p class="font-black text-white ltr-text">${idx + 1}. ${quest.question}</p>
+                                        <p>إجابتك: ${userAns !== undefined ? quest.options[userAns] : 'لم تقم بالإجابة'} ${isCorr ? '✅' : '❌'}</p>
+                                        ${!isCorr ? `<p class="text-emerald-400 font-bold">الإجابة الصحيحة: ${quest.options[quest.correct]}</p>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div class="flex gap-4 pt-4">
+                            <button onclick="initVocabExam('${categoryKey}'); render();" class="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-2xl border border-slate-700 text-sm">
+                                إعادة الاختبار بأسئلة جديدة 🔄
+                            </button>
+                            <button onclick="navigateTo('vocabMenu')" class="flex-1 py-4 btn-gradient text-white font-black rounded-2xl text-sm">
+                                العودة لقائمة المفردات 📚
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto space-y-6 border border-slate-700 shadow-2xl">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <span class="text-sm font-black text-indigo-400">اختبار المفردات: ${category.title}</span>
+                        <span class="text-xs md:text-sm bg-slate-900 text-slate-200 px-4 py-1.5 rounded-xl font-bold border border-slate-800">السؤال ${vocabExamState.currentIndex + 1} من 10</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-xl md:text-2xl font-black text-white ltr-text text-center">${q.question}</h3>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${q.options.map((opt, idx) => `
+                            <button type="button" onclick="selectVocabExamAnswer(${idx})" class="w-full p-4.5 rounded-2xl text-right text-base font-black border transition-all cursor-pointer ${vocabExamState.userAnswers[vocabExamState.currentIndex] === idx ? 'bg-indigo-600 border-indigo-400 text-white shadow-xl scale-102' : 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800'}">
+                                <span class="ml-3 text-indigo-300">${['أ', 'ب', 'ج', 'د'][idx]})</span> ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-800">
+                        <button type="button" ${vocabExamState.currentIndex === 0 ? 'disabled' : ''} onclick="vocabExamState.currentIndex--; render();" class="py-3.5 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-black rounded-2xl disabled:opacity-40">
+                            ⬅ السابق
+                        </button>
+                        ${vocabExamState.currentIndex < 9 ? `
+                            <button type="button" onclick="vocabExamState.currentIndex++; render();" class="py-3.5 px-8 btn-gradient text-white text-sm font-black rounded-2xl">
+                                التالي ➡
+                            </button>
+                        ` : `
+                            <button type="button" onclick="submitVocabExam()" class="py-3.5 px-8 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black rounded-2xl shadow-xl">
+                                تسليم الاختبار 🏁
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function initVocabExam(categoryKey) {
+            const category = vocabData[categoryKey];
+            let questions = [];
+            let items = [...category.items].sort(() => 0.5 - Math.random()).slice(0, 10);
+            items.forEach(item => {
+                let distractors = category.items.filter(i => i.word !== item.word).sort(() => 0.5 - Math.random()).slice(0, 3);
+                let options = [item.meaning, ...distractors.map(d => d.meaning)].sort(() => 0.5 - Math.random());
+                let correctIdx = options.indexOf(item.meaning);
+                questions.push({
+                    question: `What is the meaning of "${item.word}"?`,
+                    options: options,
+                    correct: correctIdx
+                });
+            });
+            vocabExamState = {
+                category: categoryKey,
+                questions: questions,
+                currentIndex: 0,
+                userAnswers: {},
+                submitted: false,
+                score: 0
+            };
+        }
+
+        function selectVocabExamAnswer(idx) {
+            vocabExamState.userAnswers[vocabExamState.currentIndex] = idx;
+            render();
+        }
+
+        function submitVocabExam() {
+            let score = 0;
+            vocabExamState.questions.forEach((q, idx) => {
+                if (vocabExamState.userAnswers[idx] === q.correct) score++;
+            });
+            vocabExamState.score = score;
+            vocabExamState.submitted = true;
+            if (score >= 8) {
+                state.points += 5;
+                state.stars += 3;
+            }
+            saveState();
+            render();
+        }
+
+        function renderGrammarMenuScreen() {
+            const levels = [
+                { id: 1, title: "Level 1: Simple Present of 'Be' (Affirmative, Negative, Questions & Wh-)", desc: "شرح ضمائر الفاعل وتصريف فعل الكينونة (am, is, are) والنفي والسؤال وأسئلة الاستعلام من الصفر." },
+                { id: 2, title: "Level 2: Yes/No Questions & Short Answers", desc: "كيف نسأل بـ (Are you... / Is he...) ونعطي إجابات قصيرة صحيحة." },
+                { id: 3, title: "Level 3: Wh- Information Questions", desc: "أسئلة الاستعلام (How, What, When, Where, Who, Why) وتوظيفها بكلمات الوحدة." },
+                { id: 4, title: "Level 4: Prepositions of Place", desc: "حروف الجر المكانية (behind, next to, near, on your right) وتحديد المواقع في الفندق." }
+            ];
+
+            let html = `
+                <div class="space-y-6">
+                    <div class="glass-card rounded-3xl p-8 border border-purple-500/40 shadow-xl">
+                        <h2 class="text-2xl md:text-3xl font-black text-white mb-3">⚙️ قسم القواعد التفاعلية — Grammar</h2>
+                        <p class="text-sm md:text-base text-slate-200 font-semibold">شرح تفاعلي تدريجي (مثل معلم خاص) مع تدريبات فورية واختبار من 20 سؤالاً لكل مستوى.</p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6">
+            `;
+
+            levels.forEach(lvl => {
+                let isUnlocked = state.completedLevels.grammar.includes(lvl.id) || lvl.id === 1 || state.completedLevels.grammar.includes(lvl.id - 1);
+                let examScore = state.examScores[lvl.id];
+
+                html += `
+                    <div class="glass-card rounded-3xl p-8 border ${isUnlocked ? 'border-slate-700 hover:border-purple-500' : 'border-slate-800 opacity-60'} transition-all shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-xs bg-purple-500/20 text-purple-300 px-3.5 py-1.5 rounded-xl border border-purple-500/30 font-black">مستوى ${lvl.id}</span>
+                                <h3 class="font-black text-white text-lg md:text-xl">${lvl.title}</h3>
+                            </div>
+                            <p class="text-sm md:text-base text-slate-300 font-semibold max-w-2xl leading-relaxed">${lvl.desc}</p>
+                            ${examScore !== undefined ? `<p class="text-sm font-black text-amber-400 mt-3">⭐ أعلى نتيجة اختبار: ${examScore} / 20 ${examScore >= 17 ? '(ناجح ✅)' : '(يحتاج إعادة محاولة ⚠️)'}</p>` : ''}
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3.5 w-full md:w-auto">
+                            ${isUnlocked ? `
+                                <button onclick="navigateTo('grammarLearn', {grammarLevel: ${lvl.id}})" class="py-3.5 px-6 btn-gradient text-white text-xs md:text-sm font-black rounded-2xl shadow">
+                                    📖 الشرح والتدريبات الفورية
+                                </button>
+                                <button onclick="navigateTo('grammarExam', {grammarLevel: ${lvl.id}})" class="py-3.5 px-6 bg-purple-600 hover:bg-purple-500 text-white text-xs md:text-sm font-black rounded-2xl shadow">
+                                    📝 اختبار المستوى (20 س)
+                                </button>
+                            ` : `
+                                <div class="px-6 py-3.5 bg-slate-900 text-slate-400 text-xs md:text-sm font-black rounded-2xl border border-slate-700 flex items-center gap-2">
+                                    🔒 المستوى مغلق (أنهِ المستوى السابق بدرجة 17+)
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        let grammarStepIndex = 0;
+        let interactiveAnswers = {};
+
+        function renderGrammarLearnScreen() {
+            const level = state.activeGrammarLevel;
+            const steps = getSuperGoalGrammarSteps(level);
+
+            if (grammarStepIndex >= steps.length) grammarStepIndex = steps.length - 1;
+            if (grammarStepIndex < 0) grammarStepIndex = 0;
+
+            const currentStep = steps[grammarStepIndex];
+
+            return `
+                <div class="space-y-6 max-w-3xl mx-auto">
+                    <div class="glass-card rounded-3xl p-6 flex justify-between items-center border border-purple-500/40 shadow-xl">
+                        <div>
+                            <span class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-xl font-black border border-purple-500/30">Grammar Level ${level}</span>
+                            <h3 class="font-black text-white text-lg mt-1">شرح تفاعلي خطوة بخطوة</h3>
+                        </div>
+                        <button onclick="navigateTo('grammarExam', {grammarLevel: ${level}})" class="py-3 px-6 btn-gradient text-white text-xs md:text-sm font-black rounded-2xl shadow">
+                            الانتقال للامتحان النهائي 📝
+                        </button>
+                    </div>
+
+                    <!-- Step Progress Bar -->
+                    <div class="glass-card rounded-3xl p-5 border border-slate-700 shadow space-y-3">
+                        <div class="flex justify-between text-xs md:text-sm font-black text-slate-200">
+                            <span>الخطوة ${grammarStepIndex + 1} من ${steps.length}</span>
+                            <span>${Math.round(((grammarStepIndex + 1) / steps.length) * 100)}% مكتمل</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-3.5 overflow-hidden border border-slate-800">
+                            <div class="bg-purple-500 h-3.5 rounded-full transition-all duration-300" style="width: ${((grammarStepIndex + 1) / steps.length) * 100}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step Content Card -->
+                    <div class="glass-card rounded-3xl p-8 md:p-10 border-2 border-purple-500/50 shadow-2xl space-y-8">
+                        <h4 class="text-xl md:text-2xl font-black text-purple-300 border-b border-slate-800 pb-4 flex items-center gap-3">
+                            <span>🔹</span> ${currentStep.title}
+                        </h4>
+
+                        <div class="text-slate-200 text-base md:text-lg font-semibold leading-relaxed space-y-4 whitespace-pre-line">
+                            ${currentStep.explanation}
+                        </div>
+
+                        ${currentStep.examples ? `
+                            <div class="bg-slate-900/95 p-6 rounded-3xl border border-slate-800 space-y-4 shadow-inner">
+                                <p class="text-xs md:text-sm font-black text-amber-400">أمثلة توضيحية من الوحدة:</p>
+                                ${currentStep.examples.map(ex => `
+                                    <div class="space-y-1.5">
+                                        <p class="text-sm md:text-base font-black text-indigo-300 ltr-text">🇬🇧 ${ex.en}</p>
+                                        <p class="text-sm md:text-base text-slate-300 font-semibold">🇸🇦 ${ex.ar}</p>
+                                        ${ex.note ? `<p class="text-xs text-amber-300 font-bold">💡 ${ex.note}</p>` : ''}
+                                    </div>
+                                `).join('<div class="my-3 border-t border-slate-800"></div>')}
+                            </div>
+                        ` : ''}
+
+                        <!-- Interactive Micro-Exercise for this step -->
+                        ${currentStep.exercise ? `
+                            <div class="bg-purple-950/40 p-6 rounded-3xl border border-purple-500/40 space-y-4">
+                                <p class="text-sm md:text-base font-black text-purple-200">✍️ تمرين تفاعلي فوري: ${currentStep.exercise.question}</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    ${currentStep.exercise.options.map((opt, oIdx) => {
+                                        const ansKey = `step_${grammarStepIndex}`;
+                                        const isSelected = interactiveAnswers[ansKey] === oIdx;
+                                        const isCorrect = oIdx === currentStep.exercise.correct;
+                                        const isAnswered = interactiveAnswers[ansKey] !== undefined;
+                                        
+                                        let btnStyle = 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800';
+                                        if (isAnswered) {
+                                            if (isCorrect) btnStyle = 'bg-emerald-600/40 border-emerald-500 text-emerald-200';
+                                            else if (isSelected) btnStyle = 'bg-rose-600/40 border-rose-500 text-rose-200';
+                                        }
+
+                                        return `
+                                            <button type="button" onclick="answerGrammarStep(${grammarStepIndex}, ${oIdx})" class="p-4 rounded-2xl text-sm font-black border transition-all cursor-pointer ltr-text text-center ${btnStyle}">
+                                                ${opt}
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                ${interactiveAnswers[`step_${grammarStepIndex}`] !== undefined ? `
+                                    <p class="text-sm font-black ${interactiveAnswers[`step_${grammarStepIndex}`] === currentStep.exercise.correct ? 'text-emerald-400' : 'text-rose-400'} pt-2">
+                                        ${interactiveAnswers[`step_${grammarStepIndex}`] === currentStep.exercise.correct ? '✅ إجابة صحيحة! أحسنت يا بطل.' : '❌ إجابة غير دقيقة. حاول مرة أخرى أو راجع الشرح.'}
+                                    </p>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between items-center gap-6">
+                        <button type="button" ${grammarStepIndex === 0 ? 'disabled' : ''} onclick="grammarStepIndex--; render();" class="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-2xl border border-slate-700 shadow text-base disabled:opacity-40">
+                            ⬅ الخطوة السابقة
+                        </button>
+                        <button type="button" ${grammarStepIndex === steps.length - 1 ? 'disabled' : ''} onclick="grammarStepIndex++; render();" class="flex-1 py-4 btn-gradient text-white font-black rounded-2xl shadow text-base disabled:opacity-40">
+                            الخطوة التالية ➡
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function answerGrammarStep(stepIdx, optionIdx) {
+            interactiveAnswers[`step_${stepIdx}`] = optionIdx;
+            render();
+        }
+
+        function getSuperGoalGrammarSteps(level) {
+            if (level === 1) {
+                return [
+                    {
+                        title: "1. ضمائر الفاعل في اللغة الإنجليزية (Subject Pronouns)",
+                        explanation: "يا بطل، لكي نبدأ أي جملة في الإنجليزية نحتاج إلى فاعل (Subject). ضمائر الفاعل هي:\n• I (أنا)\n• He (هو للمذكر)\n• She (هي للمؤنث)\n• It (هو/هي لغير العادي والمعادن والحيوانات)\n• We (نحن)\n• You (أنت / أنتم)\n• They (هم / هن)",
+                        examples: [
+                            { en: "I am on vacation.", ar: "أنا في إجازة." },
+                            { en: "He is at the reception desk.", ar: "هو في مكتب الاستقبال." }
+                        ],
+                        exercise: {
+                            question: "أي ضمير نستخدمه للحديث عن فتاة مفردة (مثال: سارة)؟",
+                            options: ["He", "She"],
+                            correct: 1
+                        }
+                    },
+                    {
+                        title: "2. تصريف فعل الكينونة Be (في الإثبات Affirmative)",
+                        explanation: "فعل الكينونة (Be) هو أهم فعل في الإنجليزية ويُستخدم للتعبير عن الحالة والهوية ومكان الوجود. يتصرف مع الضمائر هكذا:\n• I ➔ am ('m)\n• He / She / It ➔ is ('s)\n• We / You / They ➔ are ('re)",
+                        examples: [
+                            { en: "I'm in a nice hotel.", ar: "أنا في فندق جميل." },
+                            { en: "They're from Egypt.", ar: "هم من مصر." }
+                        ],
+                        exercise: {
+                            question: "اختر الفعل المساعد المناسب للضمير He:",
+                            options: ["am", "is", "are"],
+                            correct: 1
+                        }
+                    },
+                    {
+                        title: "3. نفي فعل الكينونة Be (Negative)",
+                        explanation: "لكي ننفي الجملة ونقول (لسنا / لستُ / ليس كذلك)، نضع كلمة not مباشرة بعد الفعل المساعد (am / is / are).\n• I am not ('m not)\n• He / She / It is not (isn't)\n• We / You / They are not (aren't)",
+                        examples: [
+                            { en: "I'm not here on business.", ar: "أنا لست هنا في رحلة عمل." },
+                            { en: "The elevator isn't working.", ar: "المصعد لا يعمل." }
+                        ],
+                        exercise: {
+                            question: "اختر النفي الصحيح لـ: They are on vacation.",
+                            options: ["They aren't on vacation.", "They isn't on vacation."],
+                            correct: 0
+                        }
+                    },
+                    {
+                        title: "4. تكوين أسئلة نعم/لا والإجابات القصيرة (Yes/No Questions)",
+                        explanation: "لكي نسأل سؤالاً إجابته بـ (نعم Yes) أو (لا No)، نقوم بعكس مكان الفاعل والفعل المساعد في بداية الجملة:\n• الفعل المساعد (Am / Is / Are) + الفاعل + بقية الجملة؟\n\nالإجابات القصيرة:\n• Yes, I am. / No, I'm not.\n• Yes, he is. / No, he isn't.\n• Yes, they are. / No, they aren't.",
+                        examples: [
+                            { en: "Are you here on vacation? - Yes, I am.", ar: "هل أنت هنا في إجازة؟ - نعم، أنا كذلك." }
+                        ],
+                        exercise: {
+                            question: "السؤال الصحيح مع الضمير You هو:",
+                            options: ["Is you here?", "Are you here?"],
+                            correct: 1
+                        }
+                    },
+                    {
+                        title: "5. أسئلة الاستعلام (Wh- Information Questions)",
+                        explanation: "أسئلة المعلومات تبدأ بأداة استفهام (Wh- word) لمعرفة تفاصيل دقيقة:\n• How (كيف): How are you doing?\n• What (ما/ماذا): What are your names?\n• When (متى): When is the festival?\n• Where (أين): Where are you from?\n• Who (من): Who is that tall man?\n• Why (لماذا): Why are you studying?",
+                        examples: [
+                            { en: "Where are you from? — I am from Riyadh.", ar: "من أين أنت؟ — أنا من الرياض." }
+                        ],
+                        exercise: {
+                            question: "الأداة المناسبة للسؤال عن المكان هي:",
+                            options: ["When", "Where", "Who"],
+                            correct: 1
+                        }
+                    }
+                ];
+            } else if (level === 2) {
+                return [
+                    {
+                        title: "1. بناء أسئلة Yes/No بالكامل",
+                        explanation: "عند الرغبة في الاستفسار عن حقيقة أو ظرف حالي، نبدأ بـ Am أو Is أو Are بناءً على الفاعل.",
+                        examples: [
+                            { en: "Is Ahmed happy in his new job?", ar: "هل أحمد سعيد في عمله الجديد؟" },
+                            { en: "Are they from Egypt?", ar: "هل هم من مصر؟" }
+                        ],
+                        exercise: {
+                            question: "اختر السؤال الصحيح للفاعل المفرد (he):",
+                            options: ["Are he from Saudi Arabia?", "Is he from Saudi Arabia?"],
+                            correct: 1
+                        }
+                    },
+                    {
+                        title: "2. إتقان الإجابات القصيرة",
+                        explanation: "لاكتفاء الإجابة بمهذبية دون تكرار الجملة كاملة:\n• Yes, he is. / No, he isn't.\n• Yes, they are. / No, they aren't.",
+                        examples: [
+                            { en: "Are they tourists? - No, they aren't.", ar: "هل هم سياح؟ - لا، ليسوا كذلك." }
+                        ],
+                        exercise: {
+                            question: "الإجابة القصيرة المناسبة لـ: Is she a receptionist? بـ (نعم):",
+                            options: ["Yes, she is.", "Yes, she am."],
+                            correct: 0
+                        }
+                    }
+                ];
+            } else if (level === 3) {
+                return [
+                    {
+                        title: "1. أدوات الاستفهام Wh- بالتفصيل",
+                        explanation: "نستخدم What للأسماء، Where للأماكن، When للأوقات، Who للأشخاص، How للطريقة أو الحال.",
+                        examples: [
+                            { en: "What are your names?", ar: "ما هي أسماؤكم؟" },
+                            { en: "Who's that tall man at the desk?", ar: "من ذلك الرجل الطويل عند المكتب؟" }
+                        ],
+                        exercise: {
+                            question: "الأداة المناسبة للسؤال عن وقت المهرجان (When's the festival) هي:",
+                            options: ["When", "Where"],
+                            correct: 0
+                        }
+                    }
+                ];
+            } else {
+                return [
+                    {
+                        title: "1. حروف الجر المكانية (Prepositions of Place)",
+                        explanation: "لوصف مواقع الأشياء بدقة داخل الفندق أو المدينة، نستخدم حروف الجر:\n• behind (خلف)\n• on your right (على يمينك)\n• next to (بجوار / ملاصق)\n• near (بالقرب من)",
+                        examples: [
+                            { en: "The reception desk is near the elevator.", ar: "مكتب الاستقبال بالقرب من المصعد." },
+                            { en: "The key card is next to the phone.", ar: "بطاقة المفتاح بجوار الهاتف." }
+                        ],
+                        exercise: {
+                            question: "حرف الجر الذي يعني (بجوار أو ملاصق لـ) هو:",
+                            options: ["behind", "next to"],
+                            correct: 1
+                        }
+                    }
+                ];
+            }
+        }
+
+        let grammarExamState = {
+            level: null,
+            questions: [],
+            currentIndex: 0,
+            userAnswers: {},
+            submitted: false,
+            score: 0
+        };
+
+        function renderGrammarExamScreen() {
+            const level = state.activeGrammarLevel;
+            if (!grammarExamState.questions.length || grammarExamState.level !== level) {
+                initGrammarExam(level);
+            }
+
+            const q = grammarExamState.questions[grammarExamState.currentIndex];
+
+            if (grammarExamState.submitted) {
+                let passed = grammarExamState.score >= 17;
+                return `
+                    <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto text-center space-y-6 border border-slate-700 shadow-2xl">
+                        <div class="text-6xl">${passed ? '🏆' : '⚠️'}</div>
+                        <h3 class="text-3xl font-black text-white">نتيجة امتحان المستوى ${level}</h3>
+                        <div class="text-4xl font-black ${passed ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${grammarExamState.score} / 20
+                        </div>
+                        <p class="text-base font-semibold text-slate-200">
+                            ${passed ? 'مبارك! لقد اجتزت الاختبار بنجاح وتم فتح المستوى التالي!' : 'لم تصل لدرجة النجاح (17 من 20). راجع الأخطاء أدناه وحاول مرة أخرى.'}
+                        </p>
+
+                        <div class="space-y-3 text-right max-h-60 overflow-y-auto p-3">
+                            <h4 class="font-black text-white text-sm">مراجعة الأسئلة والأخطاء:</h4>
+                            ${grammarExamState.questions.map((quest, idx) => {
+                                let userAns = grammarExamState.userAnswers[idx];
+                                let isCorr = userAns === quest.correct;
+                                return `
+                                    <div class="p-4 rounded-2xl bg-slate-900 border ${isCorr ? 'border-emerald-500/40 text-emerald-300' : 'border-rose-500/40 text-rose-300'} text-xs md:text-sm space-y-1">
+                                        <p class="font-black text-white ltr-text">${idx + 1}. ${quest.question}</p>
+                                        <p>إجابتك: ${userAns !== undefined ? quest.options[userAns] : 'لم تقم بالإجابة'} ${isCorr ? '✅' : '❌'}</p>
+                                        ${!isCorr ? `<p class="text-emerald-400 font-bold">الإجابة الصحيحة: ${quest.options[quest.correct]}</p>` : ''}
+                                        <p class="text-slate-400 font-semibold">💡 الشرح: ${quest.explanation}</p>
+                                    </div>
+                                ` ;
+                            }).join('')}
+                        </div>
+
+                        <div class="flex gap-4 pt-4">
+                            <button type="button" onclick="initGrammarExam(${level}); render();" class="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-2xl border border-slate-700 text-sm">
+                                إعادة الامتحان بأسئلة جديدة 🔄
+                            </button>
+                            <button type="button" onclick="navigateTo('grammarMenu')" class="flex-1 py-4 btn-gradient text-white font-black rounded-2xl text-sm">
+                                العودة لقائمة القواعد ⚙️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto space-y-6 border border-slate-700 shadow-2xl">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <span class="text-sm font-black text-purple-400">امتحان المستوى ${level} (قواعد SuperGoal 2)</span>
+                        <span class="text-xs md:text-sm bg-slate-900 text-slate-200 px-4 py-1.5 rounded-xl font-bold border border-slate-800">السؤال ${grammarExamState.currentIndex + 1} من 20</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-xl md:text-2xl font-black text-white ltr-text text-center">${q.question}</h3>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${q.options.map((opt, idx) => `
+                            <button type="button" onclick="selectGrammarExamAnswer(${idx})" class="w-full p-4.5 rounded-2xl text-right text-base font-black border transition-all cursor-pointer ${grammarExamState.userAnswers[grammarExamState.currentIndex] === idx ? 'bg-purple-600 border-purple-400 text-white shadow-xl scale-102' : 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800'}">
+                                <span class="ml-3 text-purple-300">${['أ', 'ب', 'ج', 'د'][idx]})</span> ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-800">
+                        <button type="button" ${grammarExamState.currentIndex === 0 ? 'disabled' : ''} onclick="grammarExamState.currentIndex--; render();" class="py-3.5 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-black rounded-2xl disabled:opacity-40">
+                            ⬅ السابق
+                        </button>
+                        ${grammarExamState.currentIndex < 19 ? `
+                            <button type="button" onclick="grammarExamState.currentIndex++; render();" class="py-3.5 px-8 btn-gradient text-white text-sm font-black rounded-2xl">
+                                التالي ➡
+                            </button>
+                        ` : `
+                            <button type="button" onclick="submitGrammarExam()" class="py-3.5 px-8 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black rounded-2xl shadow-xl">
+                                تسليم الامتحان 🏁
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function initGrammarExam(level) {
+            grammarExamState = {
+                level: level,
+                questions: generateGrammarExamQuestions(level),
+                currentIndex: 0,
+                userAnswers: {},
+                submitted: false,
+                score: 0
+            };
+        }
+
+        function selectGrammarExamAnswer(idx) {
+            grammarExamState.userAnswers[grammarExamState.currentIndex] = idx;
+            render();
+        }
+
+        function submitGrammarExam() {
+            let score = 0;
+            grammarExamState.questions.forEach((q, idx) => {
+                if (grammarExamState.userAnswers[idx] === q.correct) score++;
+            });
+            grammarExamState.score = score;
+            grammarExamState.submitted = true;
+            state.examScores[grammarExamState.level] = score;
+
+            if (score >= 17) {
+                state.points += 10;
+                state.stars += 5;
+                if (!state.completedLevels.grammar.includes(grammarExamState.level + 1) && grammarExamState.level < 4) {
+                    state.completedLevels.grammar.push(grammarExamState.level + 1);
+                }
+            }
+            saveState();
+            render();
+        }
+
+        function generateGrammarExamQuestions(level) {
+            let qs = [];
+            for (let i = 0; i < 20; i++) {
+                if (level === 1) {
+                    const pool = [
+                        { q: "I _____ here on vacation.", ops: ["am", "is", "are", "be"], corr: 0, exp: "الضمير I يأخذ دائماً الفعل am." },
+                        { q: "He _____ at the reception desk.", ops: ["am", "is", "are", "be"], corr: 1, exp: "الضمير المفرد المذكر He يأخذ is." },
+                        { q: "They _____ from Saudi Arabia.", ops: ["am", "is", "are", "be"], corr: 2, exp: "الضمير الجمع They يأخذ are." },
+                        { q: "She _____ not on business.", ops: ["am", "is", "are", "be"], corr: 1, exp: "النفي مع She يكون isn't." },
+                        { q: "We _____ in a nice hotel.", ops: ["am", "is", "are", "be"], corr: 2, exp: "الضمير We يأخذ are." },
+                        { q: "You _____ a polite receptionist.", ops: ["am", "is", "are", "be"], corr: 2, exp: "الضمير You يأخذ are." },
+                        { q: "The key card _____ on the desk.", ops: ["am", "is", "are", "be"], corr: 1, exp: "الاسم المفرد غير العاقل key card يأخذ is." },
+                        { q: "I _____ not tired.", ops: ["am", "is", "are", "be"], corr: 0, exp: "النفي مع I يكون am not." },
+                        { q: "Ahmed and Ali _____ students.", ops: ["am", "is", "are", "be"], corr: 2, exp: "الفاعل المثنى أو الجمع يأخذ are." },
+                        { q: "The elevator _____ working.", ops: ["isn't", "aren't", "am not", "not"], corr: 0, exp: "المفرد المنفي يأخذ isn't." }
+                    ];
+                    let base = pool[i % pool.length];
+                    qs.push({ question: base.q, options: base.ops, correct: base.corr, explanation: base.exp });
+                } else if (level === 2) {
+                    const pool = [
+                        { q: "_____ you here on vacation?", ops: ["Am", "Is", "Are", "Be"], corr: 2, exp: "السؤال مع you يبدأ بـ Are." },
+                        { q: "_____ Ahmed happy in his job?", ops: ["Am", "Is", "Are", "Be"], corr: 1, exp: "السؤال مع المفرد Ahmed يبدأ بـ Is." },
+                        { q: "Are they from Egypt? - Yes, they _____.", ops: ["am", "is", "are", "aren't"], corr: 2, exp: "الإجابة الإيجابية القصيرة مع they هي Yes, they are." },
+                        { q: "Is she a receptionist? - No, she _____.", ops: ["isn't", "aren't", "am not", "is"], corr: 0, exp: "النفي القصير مع she هو No, she isn't." },
+                        { q: "_____ you ready to fill in the form?", ops: ["Am", "Is", "Are", "Be"], corr: 2, exp: "السؤال موجه لـ you فيأخذ Are." },
+                        { q: "Are you on vacation? - Yes, I _____.", ops: ["am", "is", "are", "do"], corr: 0, exp: "الإجابة بـ I تأخذ Yes, I am." },
+                        { q: "Is the hotel near the festival? - Yes, it _____.", ops: ["am", "is", "are", "be"], corr: 1, exp: "الإجابة مع it تأخذ Yes, it is." },
+                        { q: "Are they tourists? - No, they _____.", ops: ["is", "isn't", "aren't", "am not"], corr: 2, exp: "النفي مع they يأخذ aren't." },
+                        { q: "_____ he the concierge?", ops: ["Am", "Is", "Are", "Be"], corr: 1, exp: "السؤال مع he يبدأ بـ Is." },
+                        { q: "Is she on business? - Yes, she _____.", ops: ["am", "is", "are", "be"], corr: 1, exp: "الإجابة مع she تأخذ is." }
+                    ];
+                    let base = pool[i % pool.length];
+                    qs.push({ question: base.q, options: base.ops, correct: base.corr, explanation: base.exp });
+                } else if (level === 3) {
+                    const pool = [
+                        { q: "_____ are you from?", ops: ["What", "Where", "When", "Who"], corr: 1, exp: "السؤال عن بلد الأصل يستخدم Where." },
+                        { q: "_____ is your name?", ops: ["Where", "What", "Who", "When"], corr: 1, exp: "السؤال عن الاسم يستخدم What." },
+                        { q: "_____ is the festival?", ops: ["Where", "What", "When", "Why"], corr: 2, exp: "السؤال عن الوقت والموعد يستخدم When." },
+                        { q: "_____ is that tall man at the desk?", ops: ["What", "Where", "Who", "When"], corr: 2, exp: "السؤال عن الأشخاص يستخدم Who." },
+                        { q: "_____ are you studying?", ops: ["Why", "Where", "When", "Who"], corr: 0, exp: "السؤال عن السبب يستخدم Why." },
+                        { q: "_____'re you doing?", ops: ["How", "Where", "When", "Who"], corr: 0, exp: "التعبير عن الحال أو الفعل يستخدم How." },
+                        { q: "Where _____ you staying?", ops: ["am", "is", "are", "be"], corr: 2, exp: "بعد Where مع you نستخدم are." },
+                        { q: "What _____ your address?", ops: ["am", "is", "are", "be"], corr: 1, exp: "Address اسم مفرد يأخذ is." },
+                        { q: "Who _____ the concierge?", ops: ["am", "is", "are", "be"], corr: 1, exp: "الكونسيرج مفرد يأخذ is." },
+                        { q: "When _____ your date of birth?", ops: ["am", "is", "are", "be"], corr: 1, exp: "تاريخ الميلاد مفرد يأخذ is." }
+                    ];
+                    let base = pool[i % pool.length];
+                    qs.push({ question: base.q, options: base.ops, correct: base.corr, explanation: base.exp });
+                } else {
+                    const pool = [
+                        { q: "The elevator is _____ the reception desk.", ops: ["behind", "on your right", "near", "all are correct"], corr: 3, exp: "جميع حروف الجر صحيحة سياقياً لوصف المكان." },
+                        { q: "Turn right, the hotel is _____.", ops: ["behind", "on your right", "at", "in"], corr: 1, exp: "التعبير الصحيح هو on your right." },
+                        { q: "The key card is _____ the phone.", ops: ["next to", "in", "at", "on"], corr: 0, exp: "التعبير الصحيح هو next to (بجوار)." },
+                        { q: "The reception desk is _____ the main entrance.", ops: ["near", "behind", "next to", "all are correct"], corr: 3, exp: "يمكن استخدام أي من حروف الجر حسب موقع الاستقبال." },
+                        { q: "Where is the elevator? It's _____ the stairs.", ops: ["behind", "on", "at", "in"], corr: 0, exp: "behind تعني خلف السلالم." },
+                        { q: "Is the restaurant near here? Yes, it's _____.", ops: ["near", "behind", "next to", "all are correct"], corr: 3, exp: "إجابة صحيحة لتحديد القرب." },
+                        { q: "The room key is _____ my pocket.", ops: ["in", "on", "at", "behind"], corr: 0, exp: "داخل الجيب يستخدم حرف الجر in." },
+                        { q: "Stand _____ the door, please.", ops: ["near", "on", "in", "to"], corr: 0, exp: "قف بالقرب من الباب (near)." },
+                        { q: "The concierge is standing _____ the desk.", ops: ["behind", "on", "in", "at"], corr: 0, exp: "يقف خلف المكتب (behind)." },
+                        { q: "Your room is just _____.", ops: ["on your right", "behind", "near", "all are correct"], corr: 3, exp: "تعبيرات صحيحة لتحديد الاتجاهات في الفندق." }
+                    ];
+                    let base = pool[i % pool.length];
+                    qs.push({ question: base.q, options: base.ops, correct: base.corr, explanation: base.exp });
+                }
+            }
+            return qs;
+        }
+
+        function renderReviewScreen() {
+            return `
+                <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto space-y-6 border border-emerald-500/40 text-center shadow-2xl">
+                    <div class="text-6xl">🎯</div>
+                    <h3 class="text-3xl font-black text-white">المراجعة الشاملة — Comprehensive Review</h3>
+                    <p class="text-slate-200 text-base md:text-lg font-semibold leading-relaxed">
+                        لقد أتممت استعراض كافة المفردات والقواعد لوحدة SuperGoal 2 (Are You Here on Vacation?). يمكنك إعادة التدريب على المفردات أو القواعد في أي وقت.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <button type="button" onclick="navigateTo('vocabMenu')" class="flex-1 py-4 btn-gradient text-white font-black rounded-2xl text-sm">
+                            مراجعة المفردات 📚
+                        </button>
+                        <button type="button" onclick="navigateTo('grammarMenu')" class="flex-1 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-2xl text-sm">
+                            مراجعة القواعد ⚙️
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProgressScreen() {
+            let totalWords = 0;
+            Object.values(vocabData).forEach(cat => totalWords += cat.items.length);
+            let learnedCount = state.learnedWords.length;
+            let percent = Math.round((learnedCount / totalWords) * 100);
+
+            return `
+                <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto space-y-6 border border-amber-500/40 shadow-2xl">
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">📊</div>
+                        <h3 class="text-3xl font-black text-white">تقدمي في المغامرة — My Progress</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-center shadow-inner">
+                            <span class="text-4xl font-black text-amber-400">${state.stars}</span>
+                            <p class="text-sm text-slate-300 font-bold mt-2">النجوم المحققة ⭐</p>
+                        </div>
+                        <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-center shadow-inner">
+                            <span class="text-4xl font-black text-indigo-400">${state.points}</span>
+                            <p class="text-sm text-slate-300 font-bold mt-2">إجمالي النقاط 🏆</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm font-black text-slate-200">
+                            <span>إتقان المفردات</span>
+                            <span>${learnedCount} / ${totalWords} (${percent}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-4 overflow-hidden border border-slate-800">
+                            <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-4 rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 space-y-3 shadow-inner">
+                        <h4 class="font-black text-white text-sm">حالة حفظ التقدم:</h4>
+                        <p class="text-sm text-slate-300 font-semibold">✅ يتم حفظ نقاطك، نجومك، والكلمات التي أتقنتها تلقائياً في جهازك (LocalStorage) لضمان استمرار تقدمك بسلاسة.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAchievementsScreen() {
+            const badges = [
+                { title: "مستكشف الفندق", desc: "أتقن 10 كلمات جديدة", unlocked: state.learnedWords.length >= 10, icon: "🏨" },
+                { title: "خبير فعل Be", desc: "اجتاز امتحان المستوى الأول بنجاح", unlocked: (state.examScores[1] || 0) >= 17, icon: "⚙️" },
+                { title: "سيد الأسئلة", desc: "أتم جميع مستويات القواعد والامتحانات", unlocked: (state.examScores[4] || 0) >= 17, icon: "✈️" },
+                { title: "بطل المغامرة", desc: "اجمع أكثر من 30 نقطة تفاعلية", unlocked: state.points >= 30, icon: "🏆" }
+            ];
+
+            return `
+                <div class="glass-card rounded-3xl p-8 md:p-10 max-w-2xl mx-auto space-y-6 border border-sky-500/40 shadow-2xl">
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">🏆</div>
+                        <h3 class="text-3xl font-black text-white">الإنجازات والأوسمة — Achievements</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        ${badges.map(b => `
+                            <div class="p-5 rounded-3xl border flex items-center gap-5 ${b.unlocked ? 'bg-sky-500/15 border-sky-500/50 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 opacity-60'} shadow">
+                                <div class="text-4xl">${b.icon}</div>
+                                <div>
+                                    <h4 class="font-black text-base ${b.unlocked ? 'text-sky-300' : 'text-slate-300'}">${b.title}</h4>
+                                    <p class="text-sm text-slate-300 font-semibold">${b.desc}</p>
+                                </div>
+                                <div class="mr-auto">
+                                    <span class="text-xs font-black px-4 py-2 rounded-2xl ${b.unlocked ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' : 'bg-slate-800 text-slate-400'}">
+                                        ${b.unlocked ? 'مُحرز ✅' : 'مقفل 🔒'}
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.onload = function() {
+            render();
+        };
+    </script>
+</body>
+</html>
